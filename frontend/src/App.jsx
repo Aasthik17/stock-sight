@@ -7,6 +7,7 @@ import PredictionChart from './components/PredictionChart'
 import TopMovers from './components/TopMovers'
 import MarketOverview from './components/MarketOverview'
 import CompareView from './components/CompareView'
+import CircularLogo from './components/CircularLogo'
 
 function Hero() {
   const highlights = [
@@ -103,7 +104,9 @@ function StockDetailView({ selectedSymbol, selectedCompany }) {
   if (!selectedSymbol) {
     return (
       <div className="empty-state">
-        <div className="empty-icon">SS</div>
+        <div className="empty-icon">
+          <CircularLogo size={56} />
+        </div>
         <div className="empty-title">No stock selected</div>
         <div className="empty-desc">Pick a company from the sidebar to view its full analysis.</div>
       </div>

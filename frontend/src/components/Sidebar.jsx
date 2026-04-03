@@ -10,6 +10,7 @@ import {
   Search,
 } from 'lucide-react'
 import { apiUrl } from '../lib/api'
+import CircularLogo from './CircularLogo'
 
 const SECTORS = ['All', 'IT', 'Banking', 'FMCG', 'Energy', 'NBFC', 'Infrastructure', 'Automobile', 'Pharma']
 const STOCKS_PER_PAGE = 5
@@ -79,7 +80,9 @@ export default function Sidebar({ activeTab, onTabChange, selectedSymbol, onSele
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
-        <div className="sidebar-brand-mark">SS</div>
+        <div className="sidebar-brand-mark">
+          <CircularLogo size={46} />
+        </div>
         <div>
           <div className="sidebar-brand-title">StockSight</div>
           <div className="sidebar-caption">Dark intelligence dashboard</div>

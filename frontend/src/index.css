@@ -176,13 +176,14 @@ a {
   height: 46px;
   display: grid;
   place-items: center;
-  border-radius: 16px;
-  background: linear-gradient(180deg, rgba(52, 211, 153, 0.24), rgba(52, 211, 153, 0.08));
-  border: 1px solid rgba(52, 211, 153, 0.18);
-  color: var(--accent-green);
-  font-size: 14px;
-  font-weight: 800;
-  letter-spacing: 0.16em;
+  border-radius: 999px;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.sidebar-brand-mark svg {
+  display: block;
 }
 
 .sidebar-brand-title {
@@ -1427,11 +1428,7 @@ a {
   display: grid;
   place-items: center;
   border-radius: 22px;
-  background: rgba(52, 211, 153, 0.14);
-  color: var(--accent-green);
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: 0.14em;
+  background: rgba(52, 211, 153, 0.08);
 }
 
 .empty-title {
