@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { apiUrl } from '../lib/api'
 
 export default function TopMovers() {
   const [data, setData] = useState(null)
@@ -6,7 +7,7 @@ export default function TopMovers() {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    fetch('/api/insights/top-movers')
+    fetch(apiUrl('/insights/top-movers'))
       .then(r => {
         if (!r.ok) throw new Error('Top movers data unavailable')
         return r.json()

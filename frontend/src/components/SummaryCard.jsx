@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { apiUrl } from '../lib/api'
 
 function RSIBar({ rsi }) {
   if (!rsi) return <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>—</span>
@@ -28,7 +29,7 @@ export default function SummaryCard({ symbol }) {
     if (!symbol) return
     setLoading(true)
     setError(null)
-    fetch(`/api/summary/${encodeURIComponent(symbol)}`)
+    fetch(apiUrl(`/summary/${encodeURIComponent(symbol)}`))
       .then(r => {
         if (!r.ok) throw new Error('Summary data unavailable')
         return r.json()

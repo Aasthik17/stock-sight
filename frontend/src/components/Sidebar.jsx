@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { BarChart3, CandlestickChart, ChevronsUpDown, LayoutGrid, Scale, Search } from 'lucide-react'
+import { apiUrl } from '../lib/api'
 
 const SECTORS = ['All', 'IT', 'Banking', 'FMCG', 'Energy', 'NBFC', 'Infrastructure', 'Automobile', 'Pharma']
 const NAV_ITEMS = [
@@ -16,7 +17,7 @@ export default function Sidebar({ activeTab, onTabChange, selectedSymbol, onSele
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/companies')
+    fetch(apiUrl('/companies'))
       .then(r => {
         if (!r.ok) throw new Error('Companies list unavailable')
         return r.json()
@@ -25,7 +26,7 @@ export default function Sidebar({ activeTab, onTabChange, selectedSymbol, onSele
       .catch(() => {})
       .finally(() => setLoading(false))
 
-    fetch('/api/insights/top-movers')
+    fetch(apiUrl('/insights/top-movers'))
       .then(r => {
         if (!r.ok) throw new Error('Movers data unavailable')
         return r.json()

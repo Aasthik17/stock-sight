@@ -12,6 +12,7 @@ import {
   Filler,
 } from 'chart.js'
 import { Line } from 'react-chartjs-2'
+import { apiUrl } from '../lib/api'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, Filler)
 
@@ -34,7 +35,7 @@ export default function StockChart({ symbol, companyInfo }) {
     if (!symbol) return
     setLoading(true)
     setError(null)
-    fetch(`/api/data/${encodeURIComponent(symbol)}?days=${period}`)
+    fetch(apiUrl(`/data/${encodeURIComponent(symbol)}?days=${period}`))
       .then(r => {
         if (!r.ok) throw new Error('Real-time data unavailable')
         return r.json()

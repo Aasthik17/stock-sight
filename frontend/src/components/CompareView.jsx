@@ -10,6 +10,7 @@ import {
   Legend,
 } from 'chart.js'
 import { Line } from 'react-chartjs-2'
+import { apiUrl } from '../lib/api'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
@@ -31,7 +32,7 @@ export default function CompareView() {
     setLoading(true)
     setError(null)
     setData(null)
-    fetch(`/api/compare?symbol1=${sym1}&symbol2=${sym2}&days=${days}`)
+    fetch(apiUrl(`/compare?symbol1=${sym1}&symbol2=${sym2}&days=${days}`))
       .then(r => {
         if (!r.ok) throw new Error('Correlation analysis failed')
         return r.json()

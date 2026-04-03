@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { apiUrl } from '../lib/api'
 
 export default function PredictionChart({ symbol }) {
   const [data, setData] = useState(null)
@@ -10,7 +11,7 @@ export default function PredictionChart({ symbol }) {
     if (!symbol || !expanded) return
     setLoading(true)
     setError(null)
-    fetch(`/api/predict/${encodeURIComponent(symbol)}`)
+    fetch(apiUrl(`/predict/${encodeURIComponent(symbol)}`))
       .then(r => {
         if (!r.ok) throw new Error('Prediction model unavailable')
         return r.json()

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { apiUrl } from '../lib/api'
 
 export default function MarketOverview() {
   const [data, setData] = useState(null)
@@ -6,7 +7,7 @@ export default function MarketOverview() {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    fetch('/api/insights/market-overview')
+    fetch(apiUrl('/insights/market-overview'))
       .then(r => {
         if (!r.ok) throw new Error('Market overview unavailable')
         return r.json()
