@@ -85,7 +85,7 @@ export default function Sidebar({ activeTab, onTabChange, selectedSymbol, onSele
         </div>
         <div>
           <div className="sidebar-brand-title">StockSight</div>
-          <div className="sidebar-caption">Dark intelligence dashboard</div>
+          <div className="sidebar-caption">Intelligence dashboard</div>
         </div>
       </div>
 
