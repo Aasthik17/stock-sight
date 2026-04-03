@@ -1,8 +1,18 @@
 import { useState, useEffect } from 'react'
-import { BarChart3, CandlestickChart, ChevronsUpDown, LayoutGrid, Scale, Search } from 'lucide-react'
+import {
+  BarChart3,
+  CandlestickChart,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsUpDown,
+  LayoutGrid,
+  Scale,
+  Search,
+} from 'lucide-react'
 import { apiUrl } from '../lib/api'
 
 const SECTORS = ['All', 'IT', 'Banking', 'FMCG', 'Energy', 'NBFC', 'Infrastructure', 'Automobile', 'Pharma']
+const STOCKS_PER_PAGE = 5
 const NAV_ITEMS = [
   { id: 'dashboard', label: 'Overview', description: 'Market dashboard', icon: LayoutGrid },
   { id: 'stock', label: 'Stock Detail', description: 'Selected symbol', icon: CandlestickChart },
@@ -14,6 +24,7 @@ export default function Sidebar({ activeTab, onTabChange, selectedSymbol, onSele
   const [movers, setMovers] = useState(null)
   const [search, setSearch] = useState('')
   const [sector, setSector] = useState('All')
+  const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -49,6 +60,21 @@ export default function Sidebar({ activeTab, onTabChange, selectedSymbol, onSele
     const matchSector = sector === 'All' || c.sector === sector
     return matchSearch && matchSector
   })
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / STOCKS_PER_PAGE))
+  const currentPage = Math.min(page, totalPages)
+  const startIndex = (currentPage - 1) * STOCKS_PER_PAGE
+  const visibleCompanies = filtered.slice(startIndex, startIndex + STOCKS_PER_PAGE)
+
+  useEffect(() => {
+    setPage(1)
+  }, [search, sector])
+
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(totalPages)
+    }
+  }, [page, totalPages])
 
   return (
     <aside className="sidebar">
@@ -92,7 +118,7 @@ export default function Sidebar({ activeTab, onTabChange, selectedSymbol, onSele
           <div>
             <div className="sidebar-title">Stock Universe</div>
             <div className="sidebar-caption">
-              {companies.length} tracked names
+              {filtered.length} matching names
               {selectedSymbol ? ` · ${selectedSymbol.replace('.NS', '')} selected` : ''}
             </div>
           </div>
@@ -135,7 +161,7 @@ export default function Sidebar({ activeTab, onTabChange, selectedSymbol, onSele
               No companies match the current search or sector filter.
             </div>
           )}
-          {filtered.map(c => {
+          {!loading && visibleCompanies.map(c => {
             const ret = movers?.[c.symbol]
             return (
               <button
@@ -166,6 +192,47 @@ export default function Sidebar({ activeTab, onTabChange, selectedSymbol, onSele
             )
           })}
         </div>
+
+        {!loading && filtered.length > 0 && (
+          <div className="sidebar-pagination">
+            <div className="sidebar-pagination-summary">
+              Showing {startIndex + 1}-{Math.min(startIndex + STOCKS_PER_PAGE, filtered.length)} of {filtered.length}
+            </div>
+
+            <div className="sidebar-pagination-controls">
+              <button
+                className="sidebar-page-arrow"
+                onClick={() => setPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                aria-label="Previous stock page"
+              >
+                <ChevronLeft size={14} strokeWidth={2} />
+              </button>
+
+              <div className="sidebar-page-list">
+                {Array.from({ length: totalPages }, (_, index) => index + 1).map(pageNumber => (
+                  <button
+                    key={pageNumber}
+                    className={`sidebar-page-btn${currentPage === pageNumber ? ' active' : ''}`}
+                    onClick={() => setPage(pageNumber)}
+                    aria-label={`Go to stock page ${pageNumber}`}
+                  >
+                    {pageNumber}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                className="sidebar-page-arrow"
+                onClick={() => setPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+                aria-label="Next stock page"
+              >
+                <ChevronRight size={14} strokeWidth={2} />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="sidebar-footnote">
