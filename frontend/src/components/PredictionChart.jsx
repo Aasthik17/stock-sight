@@ -88,7 +88,7 @@ export default function PredictionChart({ symbol }) {
               })}
             </div>
 
-            <div className="error-banner" style={{ marginTop: '14px', fontSize: '11px', background: 'rgba(168,85,247,0.08)', borderColor: 'rgba(168,85,247,0.2)', color: 'var(--accent-purple)' }}>
+            <div className="error-banner" style={{ marginTop: '14px', fontSize: '11px', background: 'rgba(234,234,234,0.1)', borderColor: 'rgba(234,234,234,0.16)', color: 'var(--accent-purple)' }}>
               ⚠️ {data.disclaimer}
             </div>
           </div>

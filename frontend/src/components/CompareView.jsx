@@ -54,8 +54,8 @@ export default function CompareView() {
           {
             label: s1key?.replace('.NS', ''),
             data: data.chart_data.series1_normalised,
-            borderColor: '#f0a339',
-            backgroundColor: 'rgba(240,163,57,0.05)',
+            borderColor: '#F2C75B',
+            backgroundColor: 'rgba(242,199,91,0.08)',
             borderWidth: 2,
             fill: true,
             tension: 0.3,
@@ -64,8 +64,8 @@ export default function CompareView() {
           {
             label: s2key?.replace('.NS', ''),
             data: data.chart_data.series2_normalised,
-            borderColor: '#68c98b',
-            backgroundColor: 'rgba(104,201,139,0.05)',
+            borderColor: '#34D399',
+            backgroundColor: 'rgba(52,211,153,0.08)',
             borderWidth: 2,
             fill: true,
             tension: 0.3,
@@ -81,26 +81,26 @@ export default function CompareView() {
     interaction: { mode: 'index', intersect: false },
     plugins: {
       legend: {
-        labels: { color: 'rgba(196,193,184,0.9)', font: { size: 11 }, boxWidth: 20 },
+        labels: { color: 'rgba(234,234,234,0.9)', font: { size: 11 }, boxWidth: 20 },
       },
       tooltip: {
-        backgroundColor: 'rgba(22,20,18,0.98)',
-        borderColor: 'rgba(235,211,165,0.18)',
+        backgroundColor: 'rgba(34,34,34,0.98)',
+        borderColor: 'rgba(234,234,234,0.14)',
         borderWidth: 1,
-        titleColor: '#f5efe3',
-        bodyColor: '#c5bcaf',
+        titleColor: '#EAEAEA',
+        bodyColor: '#D4D4D4',
         padding: 12,
         callbacks: { label: ctx => ` ${ctx.parsed.y.toFixed(2)} (base=100)` },
       },
     },
     scales: {
       x: {
-        grid: { color: 'rgba(255,255,255,0.03)' },
-        ticks: { color: 'rgba(181,174,162,0.72)', font: { size: 10 }, maxTicksLimit: 8 },
+        grid: { color: 'rgba(234,234,234,0.06)' },
+        ticks: { color: 'rgba(212,212,212,0.75)', font: { size: 10 }, maxTicksLimit: 8 },
       },
       y: {
-        grid: { color: 'rgba(255,255,255,0.04)' },
-        ticks: { color: 'rgba(181,174,162,0.72)', font: { size: 10 } },
+        grid: { color: 'rgba(234,234,234,0.08)' },
+        ticks: { color: 'rgba(212,212,212,0.75)', font: { size: 10 } },
         position: 'right',
       },
     },
@@ -111,7 +111,7 @@ export default function CompareView() {
   const corrLabel = corr !== undefined ? (corr > 0.7 ? 'High correlation' : corr > 0.3 ? 'Medium correlation' : 'Low correlation') : ''
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <div className="view-stack">
       <div className="card fade-in">
         <div className="card-header">
           <div className="card-title">Stock Comparison</div>

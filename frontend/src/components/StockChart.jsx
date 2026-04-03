@@ -67,22 +67,22 @@ export default function StockChart({ symbol, companyInfo }) {
       {
         label: 'Close Price',
         data: closes,
-        borderColor: isUp ? '#00e676' : '#ff4469',
+        borderColor: isUp ? '#34D399' : '#F2C75B',
         backgroundColor: isUp
-          ? 'rgba(0, 230, 118, 0.06)'
-          : 'rgba(255, 68, 105, 0.06)',
+          ? 'rgba(52, 211, 153, 0.08)'
+          : 'rgba(242, 199, 91, 0.08)',
         borderWidth: 2,
         fill: true,
         tension: 0.3,
         pointRadius: 0,
         pointHoverRadius: 5,
-        pointHoverBackgroundColor: isUp ? '#00e676' : '#ff4469',
+        pointHoverBackgroundColor: isUp ? '#34D399' : '#F2C75B',
       },
       ...(showMA ? [
         {
           label: 'MA7',
           data: ma7s,
-          borderColor: 'rgba(234, 179, 8, 0.78)',
+          borderColor: 'rgba(242, 199, 91, 0.82)',
           borderWidth: 1.5,
           borderDash: [4, 4],
           fill: false,
@@ -92,7 +92,7 @@ export default function StockChart({ symbol, companyInfo }) {
         {
           label: 'MA20',
           data: ma20s,
-          borderColor: 'rgba(134, 239, 172, 0.82)',
+          borderColor: 'rgba(234, 234, 234, 0.82)',
           borderWidth: 1.5,
           borderDash: [6, 3],
           fill: false,
@@ -111,18 +111,18 @@ export default function StockChart({ symbol, companyInfo }) {
       legend: {
         display: showMA,
         labels: {
-          color: 'rgba(196, 193, 184, 0.9)',
+          color: 'rgba(234, 234, 234, 0.9)',
           font: { size: 11, family: 'Manrope' },
           boxWidth: 20,
           padding: 12,
         },
       },
       tooltip: {
-        backgroundColor: 'rgba(22, 20, 18, 0.98)',
-        borderColor: 'rgba(235, 211, 165, 0.18)',
+        backgroundColor: 'rgba(34, 34, 34, 0.98)',
+        borderColor: 'rgba(234, 234, 234, 0.14)',
         borderWidth: 1,
-        titleColor: '#f5efe3',
-        bodyColor: '#c5bcaf',
+        titleColor: '#EAEAEA',
+        bodyColor: '#D4D4D4',
         padding: 12,
         callbacks: {
           label: ctx => ` ₹${ctx.parsed.y.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`,
@@ -131,13 +131,13 @@ export default function StockChart({ symbol, companyInfo }) {
     },
     scales: {
       x: {
-        grid: { color: 'rgba(255,255,255,0.035)', drawBorder: false },
-        ticks: { color: 'rgba(181,174,162,0.72)', font: { size: 10 }, maxTicksLimit: 8 },
+        grid: { color: 'rgba(234,234,234,0.06)', drawBorder: false },
+        ticks: { color: 'rgba(212,212,212,0.75)', font: { size: 10 }, maxTicksLimit: 8 },
       },
       y: {
-        grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false },
+        grid: { color: 'rgba(234,234,234,0.08)', drawBorder: false },
         ticks: {
-          color: 'rgba(181,174,162,0.72)',
+          color: 'rgba(212,212,212,0.75)',
           font: { size: 10, family: 'JetBrains Mono' },
           callback: v => '₹' + v.toLocaleString('en-IN'),
         },
