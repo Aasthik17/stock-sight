@@ -2,6 +2,11 @@
 
 A full-stack financial data platform built for the JarNox internship assignment.
 
+## 🌐 Live Links
+- **Frontend (Live Demo)**: [https://aasthik17.github.io/stock-sight/](https://aasthik17.github.io/stock-sight/)
+- **Backend API**: [https://stock-sight-1-kp1g.onrender.com](https://stock-sight-1-kp1g.onrender.com) (Hosted on Render)
+
+
 ## 🚀 Features
 - **Real-time Data**: Fetches 15 NSE blue-chip stocks using `yfinance`.
 - **Advanced Metrics**: RSI-14, 7-day/20-day Moving Averages, Volatility Scores.
@@ -68,6 +73,6 @@ The dashboard will be available at: [http://localhost:5173](http://localhost:517
 ---
 
 ## 🧪 Verification
-- **API Health**: Visit `http://localhost:8000/health`
-- **Swagger Docs**: Explore endpoints at `http://localhost:8000/docs`
-- **Dashboard**: Ensure stocks load in the sidebar and clicking them displays the chart.
+- **API Health**: [https://stock-sight-1-kp1g.onrender.com/health](https://stock-sight-1-kp1g.onrender.com/health) (or `http://localhost:8000/health`)
+- **Swagger Docs**: [https://stock-sight-1-kp1g.onrender.com/docs](https://stock-sight-1-kp1g.onrender.com/docs) (or `http://localhost:8000/docs`)
+- **Dashboard**: [https://aasthik17.github.io/stock-sight/](https://aasthik17.github.io/stock-sight/) (or `http://localhost:5173`)
