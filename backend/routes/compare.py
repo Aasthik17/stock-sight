@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from backend.database import get_db
 from backend.models import StockPrice
+from backend.data_collector import normalize_symbol, refresh_symbol_data
 from datetime import date, timedelta
 import numpy as np
 
@@ -19,11 +20,7 @@ def compare_stocks(
     Compare two stocks: returns CAGR-style return, volatility, correlation,
     and daily close series for both over the specified period.
     """
-    def normalize(sym):
-        s = sym.upper()
-        return s if s.endswith(".NS") else s + ".NS"
-
-    s1, s2 = normalize(symbol1), normalize(symbol2)
+    s1, s2 = normalize_symbol(symbol1), normalize_symbol(symbol2)
     cutoff = date.today() - timedelta(days=days)
 
     def fetch(sym):
@@ -36,6 +33,12 @@ def compare_stocks(
         return rows
 
     rows1, rows2 = fetch(s1), fetch(s2)
+    if not rows1:
+        refresh_symbol_data(db, s1)
+        rows1 = fetch(s1)
+    if not rows2:
+        refresh_symbol_data(db, s2)
+        rows2 = fetch(s2)
     if not rows1:
         raise HTTPException(status_code=404, detail=f"No data for {symbol1}")
     if not rows2:

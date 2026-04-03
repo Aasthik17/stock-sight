@@ -33,6 +33,12 @@ COMPANIES = {
 }
 
 
+def normalize_symbol(symbol: str) -> str:
+    """Normalize a user-facing symbol to the NSE ticker stored in the DB."""
+    upper = symbol.upper()
+    return upper if upper.endswith(".NS") else upper + ".NS"
+
+
 def compute_rsi(series: pd.Series, window: int = 14) -> pd.Series:
     """Compute RSI-14 — a widely-used momentum oscillator."""
     delta = series.diff()
@@ -102,7 +108,7 @@ def fetch_and_clean(symbol: str, period: str = "1y") -> Optional[pd.DataFrame]:
 
 def seed_database(db: Session):
     """Seed the database with company info and 1-year of stock prices."""
-    from backend.models import Company, StockPrice
+    from backend.models import Company
 
     # Insert companies
     for symbol, info in COMPANIES.items():
@@ -113,40 +119,66 @@ def seed_database(db: Session):
 
     # Fetch + insert prices
     for symbol in COMPANIES:
+        from backend.models import StockPrice
+
         existing_count = db.query(StockPrice).filter(StockPrice.symbol == symbol).count()
         if existing_count > 200:  # already seeded
             logger.info(f"Skipping {symbol} — already in DB")
             continue
 
-        logger.info(f"Fetching data for {symbol}...")
-        df = fetch_and_clean(symbol)
-        if df is None:
+        if not refresh_symbol_data(db, symbol):
             continue
 
-        # Delete old entries for this symbol before re-inserting
-        db.query(StockPrice).filter(StockPrice.symbol == symbol).delete()
 
-        records = []
-        for idx, row in df.iterrows():
-            records.append(StockPrice(
-                symbol=symbol,
-                date=idx.date(),
-                open=row["open"],
-                high=row["high"],
-                low=row["low"],
-                close=row["close"],
-                volume=row["volume"],
-                daily_return=None if pd.isna(row["daily_return"]) else row["daily_return"],
-                ma7=row["ma7"],
-                ma20=row["ma20"],
-                rsi=None if pd.isna(row["rsi"]) else row["rsi"],
-                volatility_score=None if pd.isna(row["volatility_score"]) else row["volatility_score"],
-                week52_high=None if pd.isna(row["week52_high"]) else row["week52_high"],
-                week52_low=None if pd.isna(row["week52_low"]) else row["week52_low"],
-            ))
-        db.bulk_save_objects(records)
+def refresh_symbol_data(db: Session, symbol: str, period: str = "1y") -> bool:
+    """
+    Refresh a single symbol in the DB.
+    Returns True when fresh data was saved, otherwise False.
+    """
+    from backend.models import Company, StockPrice
+
+    normalized_symbol = normalize_symbol(symbol)
+    info = COMPANIES.get(normalized_symbol)
+    if not info:
+        logger.warning("Unknown symbol requested for refresh: %s", symbol)
+        return False
+
+    existing_company = db.query(Company).filter(Company.symbol == normalized_symbol).first()
+    if not existing_company:
+        db.add(Company(symbol=normalized_symbol, name=info["name"], sector=info["sector"]))
         db.commit()
-        logger.info(f"  ✓ Saved {len(records)} rows for {symbol}")
+
+    logger.info("Refreshing data for %s...", normalized_symbol)
+    df = fetch_and_clean(normalized_symbol, period=period)
+    if df is None or df.empty:
+        logger.warning("Unable to refresh data for %s", normalized_symbol)
+        return False
+
+    db.query(StockPrice).filter(StockPrice.symbol == normalized_symbol).delete()
+
+    records = []
+    for idx, row in df.iterrows():
+        records.append(StockPrice(
+            symbol=normalized_symbol,
+            date=idx.date(),
+            open=row["open"],
+            high=row["high"],
+            low=row["low"],
+            close=row["close"],
+            volume=row["volume"],
+            daily_return=None if pd.isna(row["daily_return"]) else row["daily_return"],
+            ma7=row["ma7"],
+            ma20=row["ma20"],
+            rsi=None if pd.isna(row["rsi"]) else row["rsi"],
+            volatility_score=None if pd.isna(row["volatility_score"]) else row["volatility_score"],
+            week52_high=None if pd.isna(row["week52_high"]) else row["week52_high"],
+            week52_low=None if pd.isna(row["week52_low"]) else row["week52_low"],
+        ))
+
+    db.bulk_save_objects(records)
+    db.commit()
+    logger.info("  ✓ Saved %s rows for %s", len(records), normalized_symbol)
+    return True
 
 
 def get_stock_df(symbol: str, db: Session, days: int = 30) -> pd.DataFrame:

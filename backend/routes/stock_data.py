@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from backend.database import get_db
-from backend.data_collector import get_stock_df
+from backend.data_collector import get_stock_df, normalize_symbol, refresh_symbol_data
 
 router = APIRouter(prefix="/data", tags=["Stock Data"])
 
@@ -16,11 +16,13 @@ def get_stock_data(
     Returns OHLCV data + computed metrics: daily_return, MA7, MA20, rolling 52-week
     high/low, RSI-14, and volatility score for the specified symbol over the period.
     """
-    symbol_upper = symbol.upper()
-    if not symbol_upper.endswith(".NS"):
-        symbol_upper += ".NS"
+    symbol_upper = normalize_symbol(symbol)
 
     df = get_stock_df(symbol_upper, db, days=days)
+    if df.empty:
+        if refresh_symbol_data(db, symbol_upper):
+            df = get_stock_df(symbol_upper, db, days=days)
+
     if df.empty:
         raise HTTPException(status_code=404, detail=f"No data found for symbol: {symbol}")
 

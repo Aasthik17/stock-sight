@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from backend.database import get_db
 from backend.models import StockPrice
 from backend.ml.predictor import predict_next_7_days
+from backend.data_collector import normalize_symbol, refresh_symbol_data
 import pandas as pd
 
 router = APIRouter(prefix="/predict", tags=["ML Prediction"])
@@ -16,18 +17,21 @@ def predict(symbol: str, db: Session = Depends(get_db)):
     
     ⚠️ This is a simplified statistical model for demonstration purposes only.
     """
-    symbol_upper = symbol.upper()
-    if not symbol_upper.endswith(".NS"):
-        symbol_upper += ".NS"
+    symbol_upper = normalize_symbol(symbol)
 
     from datetime import date, timedelta
     cutoff = date.today() - timedelta(days=90)
-    rows = (
-        db.query(StockPrice)
-        .filter(StockPrice.symbol == symbol_upper, StockPrice.date >= cutoff)
-        .order_by(StockPrice.date)
-        .all()
-    )
+    def fetch_rows():
+        return (
+            db.query(StockPrice)
+            .filter(StockPrice.symbol == symbol_upper, StockPrice.date >= cutoff)
+            .order_by(StockPrice.date)
+            .all()
+        )
+
+    rows = fetch_rows()
+    if len(rows) < 10 and refresh_symbol_data(db, symbol_upper):
+        rows = fetch_rows()
 
     if len(rows) < 10:
         raise HTTPException(status_code=404, detail=f"Insufficient data for {symbol}")

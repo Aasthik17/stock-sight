@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from backend.database import get_db
 from backend.models import StockPrice
+from backend.data_collector import normalize_symbol, refresh_symbol_data
 from datetime import date, timedelta
 
 router = APIRouter(prefix="/summary", tags=["Summary"])
@@ -13,17 +14,20 @@ def get_summary(symbol: str, db: Session = Depends(get_db)):
     Returns 52-week high, 52-week low, average close, latest RSI,
     latest volatility score, and latest daily return for the symbol.
     """
-    symbol_upper = symbol.upper()
-    if not symbol_upper.endswith(".NS"):
-        symbol_upper += ".NS"
+    symbol_upper = normalize_symbol(symbol)
 
     cutoff = date.today() - timedelta(days=365)
-    rows = (
-        db.query(StockPrice)
-        .filter(StockPrice.symbol == symbol_upper, StockPrice.date >= cutoff)
-        .order_by(StockPrice.date)
-        .all()
-    )
+    def fetch_rows():
+        return (
+            db.query(StockPrice)
+            .filter(StockPrice.symbol == symbol_upper, StockPrice.date >= cutoff)
+            .order_by(StockPrice.date)
+            .all()
+        )
+
+    rows = fetch_rows()
+    if not rows and refresh_symbol_data(db, symbol_upper):
+        rows = fetch_rows()
 
     if not rows:
         raise HTTPException(status_code=404, detail=f"No data for {symbol}")
