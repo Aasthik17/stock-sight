@@ -18,35 +18,37 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
+    env:
+      VITE_API_BASE_URL: https://stock-sight-1-kp1g.onrender.com
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install frontend dependencies
-        run: npm ci
+        working-directory: frontend
+        run: npm install
 
       - name: Build frontend
+        working-directory: frontend
         run: npm run build
-        env:
-          VITE_API_BASE_URL: https://stock-sight-1-kp1g.onrender.com
+
+      - name: Verify build output
+        run: ls -la frontend/dist
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
-          path: frontend/dist
+          path: ./frontend/dist
 
   deploy:
     needs: build
